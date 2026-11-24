@@ -1,0 +1,15 @@
+# Copy to terraform.tfvars and fill in real values. terraform.tfvars is git-ignored.
+region                           = "us-east-1"
+inspection_vpc_id                = "vpc-0123456789abcdef0"
+inspection_attachment_subnet_ids = ["subnet-aaaa1111", "subnet-bbbb2222"]
+
+attachment_ids = {
+  prod    = "tgw-attach-prod-placeholder"
+  uat     = "tgw-attach-uat-placeholder"
+  nonprod = "tgw-attach-nonprod-placeholder"
+  shared  = "tgw-attach-shared-placeholder"
+  dr      = "tgw-attach-dr-placeholder"
+  onprem  = "tgw-attach-onprem-placeholder"
+}
+
+share_principals = [] # for example ["arn:aws:organizations::111111111111:organization/o-xxxxxxxx"]
