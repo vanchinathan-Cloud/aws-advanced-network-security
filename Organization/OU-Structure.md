@@ -19,262 +19,146 @@ flowchart TD
 
 # OU Structure
 
+# OU Structure
+
 ## Overview
 
-The AWS Organization is structured to separate security, infrastructure, and workload responsibilities while enforcing governance through AWS Organizations, Service Control Policies (SCPs), and centralized logging.
-
-Key objectives:
-
-- Separate security, networking, and application ownership.
-- Apply different guardrails to production and non-production environments.
-- Centralize logging, monitoring, and compliance reporting.
-- Support hybrid connectivity, disaster recovery, and future account growth.
-- Minimize blast radius through account-level isolation.
+The AWS Organization is structured to separate security, infrastructure, and workload responsibilities while enforcing governance through Service Control Policies (SCPs), centralized logging, and account-level isolation.
 
 ---
 
-## Organizational Structure
+## Organizational Hierarchy
 
 ```mermaid
 flowchart TD
 
-ROOT["AWS Organizations Root"]
+    ROOT["AWS Organizations Root"]
 
-ROOT --> SEC["Security OU"]
-ROOT --> INF["Infrastructure OU"]
-ROOT --> APP["Workloads OU"]
+    ROOT --> SEC["Security OU"]
+    ROOT --> INF["Infrastructure OU"]
+    ROOT --> WL["Workloads OU"]
 
-%% Security OU
+    %% Security OU
 
-SEC --> AUD["Audit Account"]
-SEC --> SECA["Security Account"]
-SEC --> LOGA["Log Archive Account"]
+    SEC --> SECA["Security Account"]
+    SEC --> LOGA["Log Archive Account"]
 
-%% Infrastructure OU
+    %% Infrastructure OU
 
-INF --> NETA["Network Account"]
-INF --> SHRA["Shared Services Account"]
+    INF --> NETA["Network Account"]
+    INF --> SHRA["Shared Services Account"]
 
-%% Workloads OU
+    %% Workloads OU
 
-APP --> PROD["Production OU"]
-APP --> NONP["Non-Production OU"]
+    WL --> PROD["Production OU"]
+    WL --> NONP["Non-Production OU"]
 
-%% Production
+    %% Production
 
-PROD --> PRDA["Production Account"]
-PROD --> DRA["Disaster Recovery Account"]
+    PROD --> PRDA["Production Account"]
+    PROD --> DRA["Disaster Recovery Account"]
 
-%% Non-Production
+    %% Non-Production
 
-NONP --> UATA["UAT Account"]
-NONP --> DEVA["NonProd Account"]
+    NONP --> UATA["UAT Account"]
+    NONP --> DEVA["Non-Production Account"]
 ```
 
 ---
 
-## Security OU
+## OU Responsibilities
 
-The Security OU contains the accounts responsible for monitoring, compliance, threat detection, and log retention.
+### Security OU
 
-### Audit Account
+Responsible for enterprise security operations, threat detection, compliance monitoring, and centralized log retention.
 
-Responsibilities:
-
-- AWS Config compliance reporting
-- Security assessments
-- Cross-account read-only auditing
-- Compliance evidence collection
-
-### Security Account
-
-Responsibilities:
-
+**Security Account**
 - Security Hub
 - GuardDuty
+- Inspector
 - Detective
-- Amazon Inspector
-- Macie
-- Incident response tooling
-- Centralized security operations
+- Incident Response tooling
 
-### Log Archive Account
-
-Responsibilities:
-
-- CloudTrail log storage
+**Log Archive Account**
+- CloudTrail logs
 - AWS Config history
 - VPC Flow Logs
 - Transit Gateway Flow Logs
-- Route 53 DNS query logs
-- AWS Network Firewall logs
-
-All logs are retained in immutable storage and protected from modification.
+- DNS Query Logs
+- Firewall logs
 
 ---
 
-## Infrastructure OU
+### Infrastructure OU
 
-The Infrastructure OU hosts shared platform services consumed by workload accounts.
+Provides shared networking and platform services for the entire organization.
 
-### Network Account
-
-Responsibilities:
-
-- AWS Transit Gateway
+**Network Account**
+- Transit Gateway
 - Direct Connect Gateway
 - Site-to-Site VPN
 - Cloud WAN
+- AWS RAM
 - AWS IPAM
 - Route 53 Resolver
-- AWS RAM shares
-- Network Manager
 
-The Network Account owns routing policies and hybrid connectivity.
-
-### Shared Services Account
-
-Responsibilities:
-
+**Shared Services Account**
+- Active Directory
+- Enterprise DNS
 - Route 53 Private Hosted Zones
-- Route 53 Resolver Rules
-- Microsoft Active Directory
-- Enterprise DNS services
-- Shared interface endpoints
-- Centralized management services
-
-Examples of shared endpoints:
-
-- Systems Manager (SSM)
-- KMS
-- Secrets Manager
-- CloudWatch
-- ECR
-- STS
+- Interface Endpoints
+- Shared Management Services
 
 ---
 
-## Production OU
+### Production OU
 
-Contains mission-critical environments that require the highest level of governance.
+Contains business-critical environments subject to the highest level of governance.
 
-### Production Account
+**Production Account**
+- Production workloads
+- Mission-critical applications
+- Customer-facing services
 
-Hosts production workloads and business-critical applications.
-
-Examples:
-
-- Core Banking
-- Airline Reservation Systems
-- Payment Platforms
-- Customer Applications
-- Enterprise APIs
-
-### Disaster Recovery Account
-
-Hosts production recovery environments in a secondary AWS Region.
-
-The DR account resides under the Production OU so it inherits the same production-grade SCPs and security requirements.
-
-Recovery models may include:
-
-- Pilot Light
-- Warm Standby
-- Active/Passive
-- Active/Active
+**Disaster Recovery Account**
+- Secondary Region recovery environment
+- Backup and replication targets
+- DR testing and failover operations
 
 ---
 
-## Non-Production OU
+### Non-Production OU
 
-Contains lower-risk environments used for testing and development.
+Provides isolated environments for testing and development activities.
 
-### UAT Account
-
-Purpose:
-
+**UAT Account**
 - User Acceptance Testing
 - Integration Testing
-- Performance Testing
 - Release Validation
 
-### NonProd Account
-
-Purpose:
-
+**Non-Production Account**
 - Development
-- Sandbox Environments
-- Automation Testing
-- Proof of Concepts
-
-Non-production environments are isolated from Production through account boundaries, TGW route segregation, and SCP controls.
+- Sandbox workloads
+- Automation testing
+- Proof-of-concept environments
 
 ---
 
-## Governance Model
+## Design Notes
 
-### Centralized Identity
-
-User access is provided through:
-
-- AWS IAM Identity Center
-- Corporate Identity Provider (Microsoft Entra ID / Active Directory)
-
-### Service Control Policies
-
-Guardrails are applied at the OU level.
-
-Examples:
-
-**Production OU**
-
-- Deny unauthorized internet gateways
-- Deny deletion of CloudTrail
-- Restrict AWS Regions
-- Enforce encryption controls
-
-**Non-Production OU**
-
-- Allow controlled experimentation
-- Prevent access to production resources
-- Require logging and tagging standards
-
-### Logging Standards
-
-All accounts send logs to the Log Archive Account.
-
-Sources include:
-
-- CloudTrail
-- AWS Config
-- VPC Flow Logs
-- Transit Gateway Flow Logs
-- Route 53 Query Logs
-- Firewall Logs
+- DR resides within the Production OU to inherit the same production-grade SCPs and security controls.
+- UAT and Non-Production environments share an OU but remain separate AWS accounts and separate CIDR allocations.
+- Security and logging services are isolated from workload accounts.
+- Networking services are centrally managed within the Network Account and shared through AWS RAM.
+- All infrastructure is deployed through Terraform and CI/CD pipelines.
+- Centralized logging is enforced across every account.
 
 ---
 
-## Design Principles
+## Related Documents
 
-- Separation of duties between networking, security, and application teams.
-- Production and non-production workloads remain isolated.
-- Shared services are centralized and reusable.
-- Hybrid connectivity is managed through the Network Account.
-- Security monitoring is centralized in the Security OU.
-- Logging is centralized in the Log Archive Account.
-- Account boundaries are used as the primary security boundary.
-- All infrastructure is deployed through Infrastructure as Code (Terraform).
-
----
-
-## Future Expansion
-
-Additional OUs can be added as the organization grows, including:
-
-- Sandbox OU
-- Data Analytics OU
-- Machine Learning OU
-- Acquisitions OU
-- Regional Workload OUs
-
-The landing zone is designed to scale to hundreds of AWS accounts while maintaining centralized governance and operational consistency.
+- Landing-Zone-Design.md
+- SCP-Strategy.md
+- CIDR-Strategy.md
+- Transit-Gateway-Strategy.md
+- Enterprise-DNS-Strategy.md
