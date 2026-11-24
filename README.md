@@ -8,8 +8,8 @@ A design for an AWS setup where a bank or airline runs many workloads safely acr
 
 - One **Network account** connects everything: the datacenter, production, test and disaster recovery.
 - Every connection between environments goes through a **central firewall** in the Security account.
-- Production, UAT and Dev are **kept apart** so a mistake in test does not reach production.
-- **All logs** go to a locked-down account where logs cannot be edited or deleted.
+- Production, UAT and Dev are **kept apart** by separate route tables and firewall rules, so a mistake in test does not reach production.
+- **All logs** go to a locked-down account where logs cannot be edited or deleted during the retention period.
 - A **second region** is ready to take over if the main region fails.
 
 ## Highlights
@@ -22,7 +22,7 @@ A design for an AWS setup where a bank or airline runs many workloads safely acr
 - Disaster recovery in a second region over Cloud WAN
 - Immutable log archive (S3 Object Lock, KMS, MFA Delete)
 - Non-overlapping IP plan managed with AWS IPAM
-- Working Terraform module for the Transit Gateway (see [Terraform](Terraform/README.md))
+- Terraform module for the Transit Gateway (see [Terraform](Terraform/README.md))
 
 ## Skills Demonstrated
 
@@ -50,10 +50,12 @@ flowchart TD
     NET -. Logs .-> LOG
 ```
 
+A static copy of this diagram is in [Diagrams/high-level-architecture.png](Diagrams/high-level-architecture.png).
+
 ## Repository Structure
 
 ```text
-aws-advanced-network-security-restructured/
+aws-advanced-network-security/
 ├── README.md
 ├── Organization/        # Landing zone, OU structure, CIDR and SCP strategy
 ├── Accounts/            # One folder per AWS account, each with its own README
@@ -65,9 +67,11 @@ aws-advanced-network-security-restructured/
 │   ├── NonProd-Account/
 │   ├── DR-Account/
 │   └── LogArchive-Account/
-├── Terraform/           # Infrastructure as code (Transit Gateway module and example)
-├── Diagrams/            # Exported / source diagrams
-└── Docs/                # Runbooks and supporting documentation
+├── Terraform/           # Transit Gateway module and example
+├── Diagrams/            # Architecture diagrams
+├── Docs/                # Runbooks and supporting documentation
+├── Project/             # Hands-on project labs
+└── aws-advanced-network-security/   # Project design documents (Projects 1-7)
 ```
 
 ## Accounts
@@ -83,7 +87,7 @@ aws-advanced-network-security-restructured/
 | DR | Secondary-region recovery environment | 10.40.0.0/16 | [README](Accounts/DR-Account/README.md) |
 | Log Archive | Immutable centralized logging | 10.5.0.0/16 (proposed) | [README](Accounts/LogArchive-Account/README.md) |
 
-> CIDRs marked "proposed" were not in the source design and are suggested to complete the plan. Validate against your IPAM and on-premises ranges. See [CIDR-Strategy](Organization/CIDR-Strategy.md).
+> Ranges marked "proposed" are suggested allocations. Validate them against your IPAM and on-premises ranges. See [CIDR-Strategy](Organization/CIDR-Strategy.md).
 
 ## Core Design Principles
 
@@ -99,29 +103,37 @@ aws-advanced-network-security-restructured/
 | Decision | Why |
 |---|---|
 | One Transit Gateway per region, shared with AWS RAM | One central place to control routing, no copies per account |
-| Separate route table for each environment | Production, UAT and Dev cannot reach each other |
+| Separate route table for each environment | Each environment only learns the routes it is allowed to reach |
+| Firewall rules in the Inspection VPC | Blocks traffic between Production, UAT and Dev even if it is routed to the firewall |
 | All outbound and cross-environment traffic goes through the Inspection VPC | One place to filter and log traffic |
 | Appliance mode on the Inspection VPC | Traffic goes through the same firewall both ways |
-| Logs sent to a separate Log Archive account with Object Lock | Logs cannot be changed or deleted, even by an admin |
+| Logs sent to a separate Log Archive account with Object Lock | Logs cannot be changed or deleted during the retention period |
 | SCPs on the organization | Blocks risky actions before they can happen |
 | DR in another region, linked with Cloud WAN | The business keeps running if the main region fails |
+
+## Assumptions
+
+- This is a design and reference implementation, not a deployed environment.
+- Regions are not fixed in the design. The Terraform example defaults to `us-east-1`.
+- Names such as "Bank / Airline Datacenter" are generic and contain no real company data.
 
 ## Getting Started
 
 1. Read [Landing-Zone-Design](Organization/Landing-Zone-Design.md) and [OU-Structure](Organization/OU-Structure.md).
 2. Review [CIDR-Strategy](Organization/CIDR-Strategy.md) and [SCP-Strategy](Organization/SCP-Strategy.md).
-3. Walk the account docs, starting with the Network Account.
+3. Walk the account docs, starting with the [Network Account](Accounts/Network-Account/README.md).
 4. See [Terraform](Terraform/README.md) for the Transit Gateway module and example.
 
 ## Related Documentation
 
 More design work from the same author is in this repository:
 
-- [Project design documents (Projects 1-7)](aws-advanced-network-security/): hub-and-spoke reference architecture, hybrid connectivity, centralized security, DNS and multi-account strategy, network automation, SD-WAN and Zscaler, and FinOps
+- [Project design documents (Projects 1-7)](aws-advanced-network-security/): Word documents covering reference architecture, hybrid connectivity, centralized security, DNS and multi-account strategy, network automation, SD-WAN and Zscaler, and FinOps
 - [Hands-on project labs](Project/): Transit Gateway hybrid, VPN and Direct Connect, Zero Trust with PrivateLink, microservices with ALB, and multi-region Global Accelerator
 
 ## Author
 
 **Vanchinathan**
-GitHub: [vanchinathan-Cloud](https://github.com/vanchinathan-Cloud)
-LinkedIn: linkedin.com/in/vanchinathan-p 
+
+- GitHub: [vanchinathan-Cloud](https://github.com/vanchinathan-Cloud)
+- LinkedIn: [linkedin.com/in/vanchinathan-p](https://www.linkedin.com/in/vanchinathan-p)
