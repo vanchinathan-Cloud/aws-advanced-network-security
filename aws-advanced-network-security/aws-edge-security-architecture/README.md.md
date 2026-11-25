@@ -1,4 +1,6 @@
 Enterprise Edge Security Architecture
+
+
 Overview
 Enterprise internet edge architecture protecting public applications using Route53, CloudFront, AWS WAF, Shield Advanced, ALB, and Global Accelerator.
 

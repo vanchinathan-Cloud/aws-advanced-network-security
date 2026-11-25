@@ -1,4 +1,6 @@
 Enterprise Direct Connect Hybrid Platform
+
+
 Overview
 Enterprise hybrid connectivity architecture integrating on-premises data centers with AWS through Direct Connect, Direct Connect Gateway, Transit Gateway, Route53 Resolver, and VPN backup.
 
