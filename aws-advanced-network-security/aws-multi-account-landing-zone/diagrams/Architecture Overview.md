@@ -1,4 +1,6 @@
-Architecture Overview
+## Architecture Overview
+
+```mermaid
 
 flowchart TB
 
@@ -16,3 +18,4 @@ PROD --> PRODAPP[Production Account]
 
 NONPROD --> UAT[UAT Account]
 NONPROD --> DEV[Development Account]
+```

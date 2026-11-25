@@ -1,4 +1,6 @@
-Diagram 3: Data Replication
+## Data Replication
+
+```mermaid 
 
 flowchart LR
 
@@ -13,3 +15,4 @@ S3A[S3 Primary]
 S3B[S3 Replica]
 
 S3A <--> S3B
+```

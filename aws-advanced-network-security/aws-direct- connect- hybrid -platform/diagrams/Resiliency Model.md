@@ -1,4 +1,7 @@
-Resiliency Model
+
+## Resiliency Model
+
+```mermaid
 
 flowchart LR
 
@@ -15,3 +18,4 @@ DX1 --> AWS
 DX2 --> AWS
 
 VPN --> AWS
+```

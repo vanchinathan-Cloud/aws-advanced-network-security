@@ -1,4 +1,6 @@
-Diagram 3: WAF Inspection Flow
+##  WAF Inspection Flow
+
+```mermaid
 
 flowchart TB
 
@@ -17,3 +19,4 @@ SQLI --> ALLOW
 XSS --> ALLOW
 
 GEO --> BLOCK
+```

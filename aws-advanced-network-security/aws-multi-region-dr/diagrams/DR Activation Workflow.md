@@ -1,4 +1,6 @@
-DR Activation Workflow
+## DR Activation Workflow
+
+```mermaid
 
 sequenceDiagram
 
@@ -17,3 +19,4 @@ Primary--xUser: Region Failure
 Route53->>DR: Redirect Traffic
 
 DR->>User: Application Available
+```

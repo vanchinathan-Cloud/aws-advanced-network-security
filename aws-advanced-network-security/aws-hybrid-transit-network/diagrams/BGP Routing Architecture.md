@@ -1,4 +1,6 @@
-BGP Routing Architecture
+## BGP Routing Architecture
+
+```mermaid
 
 flowchart LR
 
@@ -11,3 +13,4 @@ VPN <-->|Route Propagation| TGW
 TGW --> PROD
 
 TGW --> SHARED
+```

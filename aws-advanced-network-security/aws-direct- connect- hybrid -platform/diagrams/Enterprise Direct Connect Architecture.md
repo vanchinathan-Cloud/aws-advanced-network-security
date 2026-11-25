@@ -1,4 +1,6 @@
-Enterprise Direct Connect Architecture
+## Enterprise Direct Connect Architecture
+
+```mermaid
 
 flowchart TB
 
@@ -19,3 +21,4 @@ TGW --> PROD[Production VPC]
 TGW --> SHARED[Shared Services VPC]
 
 TGW --> DR[DR VPC]
+```

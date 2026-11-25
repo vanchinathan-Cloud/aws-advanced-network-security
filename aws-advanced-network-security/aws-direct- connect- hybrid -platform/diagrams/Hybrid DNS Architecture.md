@@ -1,5 +1,6 @@
-Hybrid DNS Architecture
+## Hybrid DNS Architecture
 
+```mermaid
 flowchart LR
 
 APP[Application]
@@ -11,3 +12,4 @@ R53 --> INBOUND[Inbound Endpoint]
 INBOUND --> DNS[On-Prem DNS]
 
 DNS --> AD[Active Directory]
+```

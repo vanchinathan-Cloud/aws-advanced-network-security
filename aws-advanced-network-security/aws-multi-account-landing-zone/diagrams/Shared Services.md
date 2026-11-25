@@ -1,4 +1,6 @@
-Shared Services
+## Shared Services
+
+```mermaid
 
 flowchart TB
 
@@ -23,3 +25,4 @@ SHARED --> KMS
 SHARED --> ECR
 
 SHARED --> SECRETS
+```

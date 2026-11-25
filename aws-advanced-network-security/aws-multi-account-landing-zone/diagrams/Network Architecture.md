@@ -1,4 +1,6 @@
-Network Architecture
+## Network Architecture
+
+```mermaid
 
 flowchart LR
 
@@ -14,3 +16,4 @@ UAT --> SHARED
 DEV --> SHARED
 
 PROD -.Blocked.-> UAT
+```

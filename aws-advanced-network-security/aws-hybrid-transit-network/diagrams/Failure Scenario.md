@@ -1,4 +1,6 @@
-Diagram 4: Failure Scenario
+## Failure Scenario
+
+```mermaid 
 
 sequenceDiagram
 
@@ -17,3 +19,4 @@ VPN1--xAWS: Tunnel Failure
 DC->>VPN2: Automatic Failover
 
 VPN2->>AWS: Traffic Restored
+```

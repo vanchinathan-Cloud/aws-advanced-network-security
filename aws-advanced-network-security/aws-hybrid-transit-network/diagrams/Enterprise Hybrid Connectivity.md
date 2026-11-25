@@ -1,4 +1,6 @@
-Enterprise Hybrid Connectivity
+## Enterprise Hybrid Connectivity
+
+```mermaid
 
 flowchart TB
 
@@ -15,3 +17,4 @@ VPN2 --> TGW
 TGW --> PROD[Production VPC]
 
 TGW --> SHARED[Shared Services VPC]
+```

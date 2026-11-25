@@ -1,4 +1,6 @@
-Diagram 1: AWS Organizations Structure
+## AWS Organizations Structure
+
+```mermaid
 
 flowchart TB
 
@@ -19,3 +21,4 @@ NONPROD --> UAT[UAT Account]
 NONPROD --> DEV[Development Account]
 
 DR --> DRACC[DR Account]
+```

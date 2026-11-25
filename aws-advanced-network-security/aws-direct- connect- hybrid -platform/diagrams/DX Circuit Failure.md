@@ -1,4 +1,7 @@
-DX Circuit Failure
+## DX Circuit Failure
+
+```mermaid
+
 
 sequenceDiagram
 
@@ -17,3 +20,4 @@ DX1--xAWS: Circuit Down
 DC->>DX2: Failover
 
 DX2->>AWS: Connectivity Maintained
+```

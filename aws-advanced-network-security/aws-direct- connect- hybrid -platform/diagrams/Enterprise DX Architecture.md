@@ -1,4 +1,6 @@
-Diagram 1: Enterprise DX Architecture
+## Enterprise DX Architecture
+
+```mermaid
 
 flowchart TB
 
@@ -17,3 +19,4 @@ DXGW --> TGW[Transit Gateway]
 TGW --> PROD[Production VPC]
 
 TGW --> SHARED[Shared Services VPC]
+```

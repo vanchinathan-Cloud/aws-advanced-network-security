@@ -1,4 +1,6 @@
-Diagram 3: Enterprise DNS
+## Enterprise DNS
+
+```mermaid 
 
 flowchart LR
 
@@ -13,3 +15,4 @@ R53 --> OUTBOUND[Outbound Resolver]
 OUTBOUND --> ONPREM[Corporate DNS]
 
 ONPREM --> AD[Active Directory DNS]
+```

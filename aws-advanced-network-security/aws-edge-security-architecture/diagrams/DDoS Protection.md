@@ -1,11 +1,13 @@
-Diagram 2: DDoS Protection
+## DDoS Protection
 
+```mermaid
 flowchart LR
 
 ATTACKER[DDoS Traffic]
 
 ATTACKER --> SHIELD[AWS Shield]
 
-SHIELD --> CF[CloudFront]
+SHIELD --> CloudFront[CloudFront]
 
-CF --> APPLICATION
+CloudFront --> APPLICATION
+```

@@ -1,4 +1,6 @@
-Diagram 4: DX Failure Scenario
+##  DX Failure Scenario
+
+```mermaid
 
 sequenceDiagram
 
@@ -17,3 +19,4 @@ DX1--xAWS: Circuit Failure
 DC->>DX2: Automatic Reroute
 
 DX2->>AWS: Connectivity Restored
+```

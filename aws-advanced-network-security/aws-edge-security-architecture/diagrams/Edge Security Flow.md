@@ -1,4 +1,6 @@
-Edge Security Flow
+
+## Edge Security Flow
+```mermaid
 
 flowchart TB
 
@@ -13,3 +15,4 @@ CF --> WAF[AWS WAF]
 WAF --> ALB[Application Load Balancer]
 
 ALB --> APP[Web Application]
+```

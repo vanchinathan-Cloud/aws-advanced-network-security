@@ -1,4 +1,6 @@
-Diagram 2: Transit Gateway Routing
+## Transit Gateway Routing
+
+```mermaid 
 
 flowchart LR
 
@@ -21,3 +23,4 @@ PROD --> SHARED
 UAT --> SHARED
 
 DEV --> SHARED
+```

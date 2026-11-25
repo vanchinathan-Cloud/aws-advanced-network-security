@@ -1,4 +1,6 @@
-Diagram 2: Centralized Inspection
+## Centralized Inspection
+
+```mermaid 
 
 flowchart LR
 
@@ -13,3 +15,4 @@ INSPECTION --> GWLB[Gateway Load Balancer]
 GWLB --> FW[AWS Network Firewall]
 
 FW --> PROD[Application VPC]
+```

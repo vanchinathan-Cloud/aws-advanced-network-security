@@ -1,4 +1,6 @@
-Diagram 4: Centralized Endpoint Architecture
+## Centralized Endpoint Architecture
+
+```mermaid 
 
 flowchart TB
 
@@ -23,3 +25,4 @@ SHARED --> KMS[KMS Endpoint]
 SHARED --> SECRETS[Secrets Manager Endpoint]
 
 SHARED --> ECR[ECR Endpoint]
+```
