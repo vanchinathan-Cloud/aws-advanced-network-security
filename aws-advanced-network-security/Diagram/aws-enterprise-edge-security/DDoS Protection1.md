@@ -1,0 +1,11 @@
+DDoS Protection
+
+flowchart LR
+
+ATTACK[DDoS Traffic]
+
+ATTACK --> SHIELD[AWS Shield]
+
+SHIELD --> CLOUDFRONT
+
+CLOUDFRONT --> APPLICATION
