@@ -18,3 +18,11 @@ ALB --> FW
 
 FW ---> APP[Web Application]
 ```
+
+Edge        : Route 53, CloudFront, AWS WAF, shield
+
+Region      : ALB, NLB, Target group
+
+Inspection  : Gateway LB, Network Firewall
+
+Private App : Private subnet
