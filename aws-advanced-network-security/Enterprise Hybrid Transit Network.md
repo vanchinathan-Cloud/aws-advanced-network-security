@@ -1,4 +1,6 @@
 Enterprise Hybrid Transit Network
+
+
 Overview
 Enterprise hybrid networking architecture connecting on-premises data centers to AWS using Transit Gateway, VPN, BGP, Gateway Load Balancer, and AWS Network Firewall.
 
