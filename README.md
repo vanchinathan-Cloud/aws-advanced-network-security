@@ -1,47 +1,133 @@
 # AWS Advanced Network Security Platform
 
-Enterprise multi-account AWS network and security reference architecture for regulated workloads (banking / airline). Hub-and-spoke connectivity through AWS Transit Gateway, centralized inspection, shared services, immutable log archive, and a cross-region DR account.
+Enterprise multi-account AWS network and security reference architecture for regulated industries such as banking, financial services, insurance, healthcare, and airlines.
 
-## What This Project Shows
+The platform uses a hub-and-spoke design built around AWS Transit Gateway, centralized security inspection, shared platform services, immutable logging, and cross-region disaster recovery. The design emphasizes governance, security, operational resilience, and scalability using AWS Organizations, Control Tower, and Infrastructure as Code.
 
-A design for an AWS setup where a bank or airline runs many workloads safely across many AWS accounts. In simple terms:
+---
 
-- One **Network account** connects everything: the datacenter, production, test and disaster recovery.
-- Every connection between environments goes through a **central firewall** in the Security account.
-- Production, UAT and Dev are **kept apart** so a mistake in test does not reach production.
-- **All logs** go to a locked-down account where logs cannot be edited or deleted.
-- A **second region** is ready to take over if the main region fails.
+# What This Project Demonstrates
 
-## Highlights
+This repository showcases how a large enterprise can securely operate workloads across multiple AWS accounts while maintaining centralized governance and network controls.
 
-- 8 AWS accounts, each with its own README and design notes
-- Hub-and-spoke network using AWS Transit Gateway with 7 separate route tables
-- Hybrid connectivity: Direct Connect with VPN as backup
-- Central inspection with AWS Network Firewall
-- Shared DNS, Active Directory and private endpoints
-- Disaster recovery in a second region over Cloud WAN
-- Immutable log archive (S3 Object Lock, KMS, MFA Delete)
-- Non-overlapping IP plan managed with AWS IPAM
-- Working Terraform module for the Transit Gateway (see [Terraform](Terraform/README.md))
+In simple terms:
 
-## Skills Demonstrated
+- A dedicated **Network Account** provides centralized connectivity between AWS, on-premises datacenters, and disaster recovery environments.
+- A dedicated **Security Account** hosts centralized inspection, monitoring, and threat detection services.
+- A dedicated **Shared Services Account** provides enterprise DNS, Active Directory, and shared platform services.
+- Production, UAT, and Non-Production workloads are isolated through AWS accounts, Transit Gateway route tables, and firewall policies.
+- Centralized logging ensures security and operational events cannot be altered or deleted during the retention period.
+- A secondary region is available for disaster recovery and business continuity.
 
-AWS multi-account design · Transit Gateway · Direct Connect and VPN · AWS Network Firewall · AWS Cloud WAN · Route 53 Resolver and private DNS · AWS Organizations and SCPs · Security Hub and GuardDuty · Disaster recovery design · IP address planning · Terraform
+---
 
-## High-Level Architecture
+# Landing Zone Governance
+
+The environment is governed through centralized controls before workloads are deployed.
+
+Core governance services include:
+
+- AWS Organizations
+- AWS Control Tower
+- IAM Identity Center
+- Service Control Policies (SCPs)
+- AWS Resource Access Manager (RAM)
+- AWS IP Address Manager (IPAM)
+- Centralized Logging
+- Infrastructure as Code (Terraform)
+
+The landing zone applies preventive guardrails, centralized identity management, and account-level isolation across the organization.
+
+---
+
+# Enterprise Services
+
+- AWS Organizations
+- AWS Control Tower
+- IAM Identity Center
+- AWS Transit Gateway
+- AWS Cloud WAN
+- Direct Connect
+- Site-to-Site VPN
+- Route 53 Resolver
+- Route 53 Private Hosted Zones
+- AWS RAM
+- AWS IPAM
+- AWS Network Firewall
+- AWS Security Hub
+- Amazon GuardDuty
+- AWS Config
+- CloudTrail
+- Amazon S3 Object Lock
+- AWS KMS
+
+---
+
+# AWS Organization Structure
 
 ```mermaid
 flowchart TD
-    OnPrem["Bank / Airline Datacenter"] --> DX["Direct Connect"]
-    DX --> NET["Network Account"]
-    NET --> PRD["Production Account"]
-    NET --> UAT["UAT Account"]
-    NET --> NPD["NonProd Account"]
-    NET --> SHR["Shared Services Account"]
-    NET --> SEC["Security Account"]
-    NET --> DR["DR Account"]
 
-    PRD -. Logs .-> LOG["Log Archive Account"]
+    ROOT["AWS Organizations Root"]
+
+    ROOT --> SEC["Security OU"]
+    ROOT --> INF["Infrastructure OU"]
+    ROOT --> WL["Workloads OU"]
+
+    SEC --> SECURITY["Security Account"]
+    SEC --> LOG["Log Archive Account"]
+
+    INF --> NETWORK["Network Account"]
+    INF --> SHARED["Shared Services Account"]
+
+    WL --> PRODOU["Production OU"]
+    WL --> NONPRODOU["Non-Production OU"]
+
+    PRODOU --> PROD["Production Account"]
+    PRODOU --> DR["Disaster Recovery Account"]
+
+    NONPRODOU --> UAT["UAT Account"]
+    NONPRODOU --> NONPROD["Non-Production Account"]
+```
+
+---
+
+# High-Level Network Architecture
+
+```mermaid
+flowchart TD
+
+    ONPREM["Bank / Airline Datacenter"]
+
+    DX["Direct Connect"]
+    VPN["Site-to-Site VPN"]
+
+    NET["Network Account"]
+
+    PRD["Production Account"]
+    UAT["UAT Account"]
+    NPD["Non-Production Account"]
+
+    SHR["Shared Services Account"]
+    SEC["Security Account"]
+    DR["Disaster Recovery Account"]
+
+    LOG["Log Archive Account"]
+
+    ONPREM --> DX
+    ONPREM --> VPN
+
+    DX --> NET
+    VPN --> NET
+
+    NET --> PRD
+    NET --> UAT
+    NET --> NPD
+    NET --> SHR
+    NET --> SEC
+    NET --> DR
+
+    PRD -. Logs .-> LOG
     UAT -. Logs .-> LOG
     NPD -. Logs .-> LOG
     SHR -. Logs .-> LOG
@@ -50,13 +136,43 @@ flowchart TD
     NET -. Logs .-> LOG
 ```
 
-## Repository Structure
+A static copy of this diagram is available in:
 
 ```text
-aws-advanced-network-security-restructured/
+Diagrams/high-level-architecture.png
+```
+
+---
+
+# Architecture Highlights
+
+- Eight dedicated AWS accounts
+- Single Transit Gateway per region
+- Seven Transit Gateway route tables
+- Hybrid connectivity using Direct Connect and VPN
+- Centralized security inspection
+- Shared DNS and Active Directory services
+- Cross-region disaster recovery
+- Immutable centralized logging
+- Centralized IP management using AWS IPAM
+- Infrastructure as Code using Terraform
+
+---
+
+# Repository Structure
+
+```text
+aws-advanced-network-security/
+
 ├── README.md
-├── Organization/        # Landing zone, OU structure, CIDR and SCP strategy
-├── Accounts/            # One folder per AWS account, each with its own README
+
+├── Organization/
+│   ├── Landing-Zone-Design.md
+│   ├── OU-Structure.md
+│   ├── SCP-Strategy.md
+│   └── CIDR-Strategy.md
+
+├── Accounts/
 │   ├── Network-Account/
 │   ├── Security-Account/
 │   ├── Shared-Services-Account/
@@ -65,63 +181,184 @@ aws-advanced-network-security-restructured/
 │   ├── NonProd-Account/
 │   ├── DR-Account/
 │   └── LogArchive-Account/
-├── Terraform/           # Infrastructure as code (Transit Gateway module and example)
-├── Diagrams/            # Exported / source diagrams
-└── Docs/                # Runbooks and supporting documentation
+
+├── Terraform/
+
+├── Diagrams/
+
+├── Docs/
+
+├── Project/
+
+└── aws-advanced-network-security/
 ```
 
-## Accounts
+---
 
-| Account | Purpose | CIDR | Docs |
-|---|---|---|---|
-| Network | Connectivity hub: TGW, Direct Connect, Cloud WAN, VPN, IPAM, Route 53 Resolver | 10.0.0.0/16 (proposed) | [README](Accounts/Network-Account/README.md) |
-| Security | Inspection VPC, Network Firewall, Security Hub, GuardDuty, WAF/Shield, SOC | 10.1.0.0/16 (proposed) | [README](Accounts/Security-Account/README.md) |
-| Shared Services | Managed AD, DNS, interface endpoints, PrivateLink, backup | 10.2.0.0/16 (proposed) | [README](Accounts/Shared-Services-Account/README.md) |
-| Production | Mission-critical workloads (core banking, payments, ATM, portals) | 10.10.0.0/16 | [README](Accounts/Production-Account/README.md) |
-| UAT | User acceptance, regression, performance, release validation | 10.30.0.0/17 | [README](Accounts/UAT-Account/README.md) |
-| NonProd | Development, sandboxes, training labs | 10.30.128.0/17 | [README](Accounts/NonProd-Account/README.md) |
-| DR | Secondary-region recovery environment | 10.40.0.0/16 | [README](Accounts/DR-Account/README.md) |
-| Log Archive | Immutable centralized logging | 10.5.0.0/16 (proposed) | [README](Accounts/LogArchive-Account/README.md) |
+# Account Overview
 
-> CIDRs marked "proposed" were not in the source design and are suggested to complete the plan. Validate against your IPAM and on-premises ranges. See [CIDR-Strategy](Organization/CIDR-Strategy.md).
+| Account | Purpose | CIDR |
+|----------|----------|----------|
+| Network | Transit Gateway, Direct Connect, VPN, Cloud WAN, IPAM, Route 53 Resolver | 10.60.0.0/17 |
+| Security | Inspection VPC, AWS Network Firewall, Security Hub, GuardDuty | 10.50.0.0/17 |
+| Shared Services | DNS, Active Directory, Interface Endpoints, PrivateLink | 10.20.0.0/17 |
+| Production | Mission-critical workloads | 10.10.0.0/16 |
+| UAT | User acceptance and pre-production testing | 10.30.0.0/17 |
+| Non-Production | Development and sandbox environments | 10.30.128.0/17 |
+| Disaster Recovery | Secondary region recovery environment | 10.40.0.0/16 |
+| Log Archive | Centralized immutable logging | Dedicated logging account |
 
-## Core Design Principles
+Refer to **CIDR-Strategy.md** for detailed allocation policies.
 
-- Single Transit Gateway per region, shared via AWS RAM
-- Route-table isolation between environments (Production never reaches UAT / NonProd)
-- All internet egress and inter-environment traffic inspected centrally
-- Centralized, immutable logging (S3 Object Lock, KMS, MFA Delete)
-- Preventive guardrails through SCPs
-- Cross-region DR over Cloud WAN
+---
 
-## Key Design Decisions (in plain English)
+# Core Design Principles
 
-| Decision | Why |
-|---|---|
-| One Transit Gateway per region, shared with AWS RAM | One central place to control routing, no copies per account |
-| Separate route table for each environment | Production, UAT and Dev cannot reach each other |
-| All outbound and cross-environment traffic goes through the Inspection VPC | One place to filter and log traffic |
-| Appliance mode on the Inspection VPC | Traffic goes through the same firewall both ways |
-| Logs sent to a separate Log Archive account with Object Lock | Logs cannot be changed or deleted, even by an admin |
-| SCPs on the organization | Blocks risky actions before they can happen |
-| DR in another region, linked with Cloud WAN | The business keeps running if the main region fails |
+## Centralized Connectivity
 
-## Getting Started
+A single Transit Gateway is deployed per AWS Region and shared across workload accounts using AWS RAM.
 
-1. Read [Landing-Zone-Design](Organization/Landing-Zone-Design.md) and [OU-Structure](Organization/OU-Structure.md).
-2. Review [CIDR-Strategy](Organization/CIDR-Strategy.md) and [SCP-Strategy](Organization/SCP-Strategy.md).
-3. Walk the account docs, starting with the Network Account.
-4. See [Terraform](Terraform/README.md) for the Transit Gateway module and example.
+## Environment Isolation
 
-## Related Documentation
+Production, UAT, and Non-Production environments remain isolated using:
 
-More design work from the same author is in this repository:
+- Separate AWS accounts
+- Separate Transit Gateway route tables
+- Firewall inspection policies
+- SCP governance
 
-- [Project design documents (Projects 1-7)](aws-advanced-network-security/): hub-and-spoke reference architecture, hybrid connectivity, centralized security, DNS and multi-account strategy, network automation, SD-WAN and Zscaler, and FinOps
-- [Hands-on project labs](Project/): Transit Gateway hybrid, VPN and Direct Connect, Zero Trust with PrivateLink, microservices with ALB, and multi-region Global Accelerator
+## Centralized Inspection
 
-## Author
+Internet-bound traffic and designated east-west traffic are inspected through a centralized Inspection VPC hosted in the Security Account.
 
-**Vanchinathan**
-GitHub: [vanchinathan-Cloud](https://github.com/vanchinathan-Cloud)
-LinkedIn: _add your LinkedIn URL here_
+## Immutable Logging
+
+Logs are stored centrally using:
+
+- S3 Object Lock
+- KMS Encryption
+- MFA Delete
+- Cross-account log delivery
+
+## Infrastructure as Code
+
+All infrastructure is managed through:
+
+- Terraform
+- Pull Requests
+- CI/CD Pipelines
+- Change Management Controls
+
+---
+
+# Key Architecture Decisions
+
+| Decision | Rationale |
+|------------|------------|
+| Single Transit Gateway per Region | Simplifies governance and routing management |
+| AWS RAM for sharing | Eliminates duplicated network infrastructure |
+| Dedicated route table per environment | Enables route-level segmentation |
+| Centralized Inspection VPC | Consistent security controls and monitoring |
+| Appliance Mode enabled | Ensures symmetric traffic flows |
+| Centralized Log Archive | Supports compliance and forensic investigations |
+| SCP Guardrails | Prevent risky changes before they occur |
+| Cross-Region DR | Improves resilience and business continuity |
+
+---
+
+# Disaster Recovery Strategy
+
+The Disaster Recovery Account resides in a secondary AWS Region and inherits production governance controls.
+
+Recovery capabilities include:
+
+- Cross-region database replication
+- Route 53 failover
+- Backup replication
+- Pilot Light deployment
+- Warm Standby architecture
+- Cloud WAN connectivity between regions
+
+---
+
+# Skills Demonstrated
+
+- AWS Organizations
+- AWS Control Tower
+- Transit Gateway
+- AWS RAM
+- Direct Connect
+- Site-to-Site VPN
+- AWS IPAM
+- AWS Cloud WAN
+- Route 53 Resolver
+- AWS Network Firewall
+- Security Hub
+- GuardDuty
+- AWS Organizations SCPs
+- Multi-Account Architecture
+- Disaster Recovery Design
+- Infrastructure as Code
+- Terraform
+- Enterprise Network Security
+
+---
+
+# Getting Started
+
+1. Review **Landing-Zone-Design.md**
+2. Review **OU-Structure.md**
+3. Review **CIDR-Strategy.md**
+4. Review **SCP-Strategy.md**
+5. Review the account-specific documentation
+6. Review runbooks under **Docs/**
+7. Explore Terraform modules and examples
+
+---
+
+# Related Documentation
+
+## Organization
+
+- Landing Zone Design
+- OU Structure
+- CIDR Strategy
+- SCP Strategy
+
+## Account Documentation
+
+- Network Account
+- Security Account
+- Shared Services Account
+- Production Account
+- UAT Account
+- Non-Production Account
+- Disaster Recovery Account
+- Log Archive Account
+
+## Operations
+
+- DR Failover Runbook
+- Break-Glass Access Runbook
+- Security Incident Response
+- Transit Gateway Troubleshooting
+
+## Projects
+
+- Hybrid Connectivity
+- Transit Gateway Architectures
+- Multi-Region DR
+- DNS Design
+- Security Inspection Patterns
+- Zscaler and SD-WAN Integration
+- FinOps
+
+---
+
+# Author
+
+**Vanchinathan P**
+
+GitHub: https://github.com/vanchinathan-Cloud
+
+LinkedIn: https://www.linkedin.com/in/vanchinathan-p

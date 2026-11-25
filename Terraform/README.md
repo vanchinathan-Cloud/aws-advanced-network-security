@@ -1,31 +1,247 @@
 # Terraform
 
-Infrastructure as code for the Network account.
+## Overview
+
+This directory contains Infrastructure as Code (IaC) used to deploy networking components for the Enterprise AWS Network Security Platform.
+
+Terraform is used to automate deployment of shared networking infrastructure, enforce consistency across environments, and reduce manual configuration.
+
+Current implementation focuses on Transit Gateway automation, with additional modules planned for security, DNS, logging, and IP management.
+
+---
+
+## Directory Structure
 
 ```text
 Terraform/
+
 ├── modules/
-│   └── transit-gateway/     # Transit Gateway, route tables, attachments, RAM share
+│
+│   └── transit-gateway/
+│        ├── main.tf
+│        ├── variables.tf
+│        ├── outputs.tf
+│        └── README.md
+│
 └── live/
-    └── network-account/     # Example that wires the module to this design
+    └── network-account/
+         ├── main.tf
+         ├── terraform.tfvars.example
+         ├── providers.tf
+         └── outputs.tf
 ```
 
-## What is included
-- **`modules/transit-gateway`**: a reusable module that builds the Transit Gateway with one route table per environment and default association/propagation turned off.
-- **`live/network-account`**: uses the module with the seven route tables from the design, the Inspection VPC (appliance mode), and the propagation rules from [Routing-Strategy](../Accounts/Network-Account/Routing-Strategy.md).
+---
 
-## How to use
+## Current Module
+
+### Transit Gateway Module
+
+The Transit Gateway module provisions:
+
+- AWS Transit Gateway
+- Transit Gateway Route Tables
+- Transit Gateway Attachments
+- Route Table Associations
+- Route Table Propagations
+- AWS RAM Share
+- Attachment Auto-Accept Controls
+
+Design objectives:
+
+- One Transit Gateway per Region
+- Route-table-based environment isolation
+- Centralized network governance
+- Reusable deployment model
+
+---
+
+## Supported Route Tables
+
+The module creates route tables aligned to the architecture documentation.
+
+```text
+TGW-RT-PROD
+
+TGW-RT-UAT
+
+TGW-RT-NONPROD
+
+TGW-RT-SHARED
+
+TGW-RT-SECURITY
+
+TGW-RT-ONPREM
+
+TGW-RT-DR
+```
+
+---
+
+## Architecture Alignment
+
+The Terraform configuration implements the same routing strategy defined throughout the repository:
+
+- Production isolation
+- UAT isolation
+- NonProd isolation
+- Shared Services connectivity
+- Centralized inspection
+- DR connectivity
+- Hybrid routing
+
+Default Transit Gateway route propagation and association are disabled to ensure all routing is explicitly controlled.
+
+---
+
+## Usage
+
 ```bash
 cd Terraform/live/network-account
-cp terraform.tfvars.example terraform.tfvars   # fill in real values
+
+cp terraform.tfvars.example terraform.tfvars
+
 terraform init
+
+terraform validate
+
 terraform plan
 ```
 
-## How isolation works (plain English)
-- Each environment has its own route table and only learns the routes it is allowed to reach.
-- Prod, UAT and NonProd have no route to each other.
-- Everything else goes to the Inspection VPC, and the firewall rules decide what is allowed.
+Review the execution plan before applying any changes.
+
+---
+
+## Routing Model
+
+### Environment Isolation
+
+Production, UAT, and Non-Production environments are intentionally separated.
+
+```text
+Production
+
+✕ UAT
+
+✕ NonProd
+```
+
+Transit Gateway route tables control allowed communication paths.
+
+### Centralized Inspection
+
+Internet-bound and inspected traffic is routed through the Security Account inspection VPC.
+
+```text
+Spoke VPC
+
+↓
+
+Transit Gateway
+
+↓
+
+Inspection VPC
+
+↓
+
+AWS Network Firewall
+```
+
+---
+
+## Future Modules
+
+Planned modules include:
+
+### Security
+
+```text
+Network Firewall
+
+Gateway Load Balancer
+
+Security Hub
+
+GuardDuty
+```
+
+### DNS
+
+```text
+Route53 Resolver
+
+Private Hosted Zones
+
+Resolver Rules
+```
+
+### Logging
+
+```text
+CloudTrail
+
+Config
+
+Flow Logs
+
+Log Archive
+```
+
+### Address Management
+
+```text
+AWS IPAM
+
+CIDR Pools
+
+Allocation Workflows
+```
+
+### Hybrid Connectivity
+
+```text
+Direct Connect Gateway
+
+VPN Connections
+
+Cloud WAN
+```
+
+---
+
+## Design Principles
+
+- Infrastructure as Code first
+- Modular architecture
+- Reusable networking components
+- Explicit routing controls
+- Consistent deployments
+- Version-controlled infrastructure
+- CI/CD driven changes
+
+---
 
 ## Status
-The module is written from the design in this repo. Run `terraform validate` and `terraform plan` against a test account before real use. More modules (inspection VPC, Network Firewall, IPAM, log archive) can be added under `modules/`.
+
+Current Status:
+
+✅ Transit Gateway Module
+
+✅ Route Table Automation
+
+✅ RAM Sharing
+
+✅ Route Propagation Controls
+
+🚧 Network Firewall Module
+
+🚧 AWS IPAM Module
+
+🚧 Route53 Resolver Module
+
+🚧 Logging Module
+
+🚧 Cloud WAN Module
+
+This module is intended as a reference implementation derived from the enterprise architecture documented throughout the repository.
