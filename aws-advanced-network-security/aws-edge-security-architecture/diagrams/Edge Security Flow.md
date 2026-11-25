@@ -8,11 +8,13 @@ USER[Internet User]
 
 USER --> DNS[Route53]
 
-DNS --> CF[CloudFront]
+DNS --> EDGE [CloudFront-WEB TRAFFIC]
 
 CF --> WAF[AWS WAF]
 
 WAF --> ALB[Application Load Balancer]
 
-ALB --> APP[Web Application]
+ALB --> FW
+
+FW ---> APP[Web Application]
 ```

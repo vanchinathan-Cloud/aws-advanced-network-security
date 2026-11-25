@@ -1,11 +1,14 @@
-Route53 Health Check Failover
+## Route53 Failover
+
+```mermaid 
 
 flowchart TB
 
-USER
+CLIENT
 
-USER --> R53[Route53]
+CLIENT --> R53[Route53]
 
 R53 --> PRIMARY[Primary Region]
 
-R53 --> DR[Disaster Recovery Region]
+R53 --> SECONDARY[DR Region]
+```
