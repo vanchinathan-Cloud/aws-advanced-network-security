@@ -1,11 +1,14 @@
+## DX + VPN Resiliency Architecture
+
 ```mermaid
-DX + VPN Resiliency
-flowchart LR
+flowchart TB
 
 DC["Corporate Data Center"]
 
-DX1["Primary Direct Connect"]
-DX2["Secondary Direct Connect"]
+DX1["Direct Connect Primary"]
+DX2["Direct Connect Secondary"]
+
+DXGW["Direct Connect Gateway"]
 
 VPN["VPN Backup"]
 
@@ -14,9 +17,12 @@ TGW["AWS Transit Gateway"]
 DC --> DX1
 DC --> DX2
 
-DC -. Backup .-> VPN
+DX1 --> DXGW
+DX2 --> DXGW
 
-DX1 --> TGW
-DX2 --> TGW
+DXGW --> TGW
+
+DC -. Emergency Backup .-> VPN
+
 VPN --> TGW
 ```
