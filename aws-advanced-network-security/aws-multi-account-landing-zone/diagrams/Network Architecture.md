@@ -4,16 +4,23 @@
 
 flowchart LR
 
-TGW[Transit Gateway]
+TGW["AWS Transit Gateway"]
 
-TGW --> PROD[Production VPC]
-TGW --> UAT[UAT VPC]
-TGW --> DEV[Development VPC]
-TGW --> SHARED[Shared Services]
+PROD["Production VPC"]
+UAT["UAT VPC"]
+DEV["Development VPC"]
+
+SHARED["Shared Services VPC"]
+
+TGW --> PROD
+TGW --> UAT
+TGW --> DEV
+
+TGW --> SHARED
 
 PROD --> SHARED
 UAT --> SHARED
 DEV --> SHARED
 
-PROD -.Blocked.-> UAT
+PROD -. Segmentation Policy .-> UAT
 ```
