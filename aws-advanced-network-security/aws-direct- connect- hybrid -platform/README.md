@@ -1,10 +1,12 @@
-Enterprise Direct Connect Hybrid Platform
+# Enterprise Direct Connect Hybrid Platform
 
+Overview:
 
-Overview
 Enterprise hybrid connectivity architecture integrating on-premises data centers with AWS through Direct Connect, Direct Connect Gateway, Transit Gateway, Route53 Resolver, and VPN backup.
 
-Architecture
+# Architecture
+
+```mermaid
 flowchart TB
 
 DC[Corporate Data Center]
@@ -27,13 +29,17 @@ TGW --> DR[Disaster Recovery VPC]
 VPN[VPN Backup]
 
 VPN --> TGW
-Business Requirements
+```
+# Business Requirements
+
 Private Connectivity
 Redundant Routing
 Regulatory Compliance
 Disaster Recovery
 Hybrid DNS
-Connectivity Design
+
+# Connectivity Design
+
 Primary Path
 Data Center
 
@@ -53,7 +59,8 @@ Transit Gateway
 
 AWS Workloads
 
-Backup Path
+# Backup Path
+
 Data Center
 
 ↓
@@ -68,7 +75,8 @@ Transit Gateway
 
 AWS Workloads
 
-BGP Routing
+# BGP Routing
+
 Dynamic Route Advertisement
 Route Propagation
 Route Filtering
@@ -89,11 +97,16 @@ Expected: Route Withdrawal
 
 Status: PASS
 
-Operational Runbooks
+# Operational Runbooks
+
 Direct Connect Failure
+
 BGP Neighbor Down
+
 DR Activation
+
 DNS Failover
+
 VPN Emergency Recovery
 
 # AWS site-site VPN Troubleshooting Check list:
