@@ -1,10 +1,12 @@
-Enterprise Multi-Region Disaster Recovery
+# Enterprise Multi-Region Disaster Recovery
 
 
-Overview
+# Overview:
+
 Multi-region architecture supporting business continuity, disaster recovery, and application resilience.
 
-Architecture
+# Architecture
+```mermaid 
 flowchart LR
 
 USE1[us-east-1]
@@ -24,20 +26,26 @@ USE1 --> S3A[S3 Bucket]
 EUW1 --> S3B[S3 Bucket]
 
 S3A <--> S3B
-DR Strategy
+```
+
+# DR Strategy
+
 Recovery Objective:
 
 RTO: 15 Minutes
 
 RPO: Near Zero
 
-Failover Process
+# Failover Process
+
 Region Failure Detected
 Route53 Health Check Fails
 DNS Routing Updated
 Traffic Redirected
 Services Restored
-DR Testing
+
+# DR Testing
+
 Primary Region Failure
 Result: PASS
 
