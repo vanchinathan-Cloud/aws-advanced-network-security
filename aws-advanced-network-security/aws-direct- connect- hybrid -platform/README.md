@@ -95,3 +95,12 @@ BGP Neighbor Down
 DR Activation
 DNS Failover
 VPN Emergency Recovery
+
+AWS site-site VPN Check list:
+
+If you have an AWS Site-to-Site VPN where Tunnel 1 is UP and Tunnel 2 is DOWN, I would troubleshoot from both the AWS side and the customer gateway (on-premises firewall/router) side.
+
+"When one AWS Site-to-Site VPN tunnel is up and the secondary tunnel is down.
+I first verify the peer IP, PSK, IKE/IPsec proposals, and firewall connectivity (UDP 500, UDP 4500, ESP). 
+Next, I check whether the tunnel fails during IKE negotiation, IPsec SA establishment, or BGP adjacency formation. 
+I review customer gateway logs and AWS VPN tunnel logs in CloudWatch to identify proposal mismatches, authentication failures, routing issues, or blocked ports. Since AWS provides two tunnels for redundancy, I ensure both tunnels are independently configured according to the AWS-generated VPN configuration file."
